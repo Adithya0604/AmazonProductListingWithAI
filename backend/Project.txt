@@ -15,7 +15,7 @@ Project Status:
       1. Server setup & DB Connection & .ENV 
       2. Final Endpoint Api(AmazonProductListing) & aiService (Gemini). is working properly.
       3. Data of all steps are been followed. the retriveal of data from frontend, validting it, Using scrapper for extracting the product details, Stroing Original Data & Optimized Data (Gemini). 
-      4. Ai Service (Gemini) working properly with the Original Data. And optimzation is done in quit good way. 
+      4. Ai Service (Gemini) working properly with the Original Data. And optimzation is done in good way. 
    B. frontend
       1. UI is very simple with only Required Feilds (Input, Button).
       2. Card displaying side by side with proper details from Db after storing.
