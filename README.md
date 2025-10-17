@@ -3,145 +3,126 @@ Project Overview
 
 This project allows users to fetch Amazon product details using ASIN numbers and get an optimized AI-generated version alongside the original data. Users can also view their search history.
 
-Backend Structure
+**Backend Structure**
 
-Environment Variables:
+  **Database**:
 
-Port, host, user, password, database, connection limit
+    MySQL database connection established
 
-Gemini API key
+    products table created for storing product data
 
-Database:
+  **Folders**:
 
-MySQL database connection established
+    router/ → API routes
 
-products table created for storing product data
+    controller/ → Business logic for:
 
-Folders:
+    Searching product data
 
-router/ → API routes
+    Retrieving product history
 
-controller/ → Business logic for:
+    config/ → Database table setup
 
-Searching product data
+**Frontend Structure**
 
-Retrieving product history
+  Built with React (using Vite for setup)
 
-config/ → Database table setup
+  Components:
 
-Frontend Structure
+    Centralized input component with:
 
-Built with React (using Vite for setup)
+      ASIN input box
 
-Components:
+      Submit button → fetches product data asynchronously
 
-Centralized input component with:
+      Loader animation until data is fetched
 
-ASIN input box
+    Two cards side-by-side showing:
 
-Submit button → fetches product data asynchronously
+      Original product data
 
-Loader animation until data is fetched
+      AI-optimized data
 
-Two cards side-by-side showing:
+    Footer component → displays frequently used search keywords
 
-Original product data
+    View History component → displays previously searched ASINs (most recent on top, hover to see ASIN)
 
-AI-optimized data
+**Setup Instructions**
 
-Footer component → displays frequently used search keywords
+  Clone the repository
 
-View History component → displays previously searched ASINs (most recent on top, hover to see ASIN)
+  Install backend dependencies:
 
-Setup Instructions
+    npm install
 
-Clone the repository
+  Install frontend dependencies:
 
-Install backend dependencies:
+    cd frontend
+    npm install
 
-npm install
 
+**Start the backend server:**
 
-Install frontend dependencies:
+  npm run dev
 
-cd frontend
-npm install
 
+**Start the frontend:**
 
-Start the backend server:
+  npm run dev
 
-npm run server
+**API Testing**
 
+  Fetch product by ASIN
 
-Start the frontend:
+    curl -X POST http://localhost:9003/api/amazon-product \
+    -H "Content-Type: application/json" \
+    -d '{"ASIN":<ASIN_NUMBER>}'
 
-npm run client
 
-API Testing
+  Get all search history
 
-Fetch product by ASIN
+    curl -X GET http://localhost:9003/all-history-product-list
 
-curl -X POST http://localhost:9003/api/amazon-product \
-  -H "Content-Type: application/json" \
-  -d '{"ASIN":"B08N5WRWNW"}'
+  Gemini AI Prompt Overview
 
+    The Gemini prompt ensures the AI generates optimized and structured product data. Key points:
 
-Get all search history
+      Title:
 
-curl -X GET http://localhost:9003/all-history-product-list
+        Keyword-rich, 50–200 characters
 
-Gemini AI Prompt Overview
+        Includes brand, product type, key features
 
-The Gemini prompt ensures the AI generates optimized and structured product data. Key points:
+        If missing, create from bullet points/features
 
-Title:
+      Description:
 
-Keyword-rich, 50–200 characters
+        Detailed, persuasive, never empty
 
-Includes brand, product type, key features
+        Generated using title, features, highlights, and use cases
 
-If missing, create from bullet points/features
+      Bullet Points:
 
-Description:
+        5–7 precise, clear points
 
-Detailed, persuasive, never empty
+        One or two sentences each
 
-Generated using title, features, highlights, and use cases
+        Emphasizes product significance
 
-Natural language; no forced capitalization
+      Features:
 
-Bullet Points:
+        Highlight key technical aspects or unique selling points
 
-5–7 precise, clear points
+        Informative and scannable
 
-One or two sentences each
+      Price:
 
-Emphasizes product significance
+        Use original price only; do not modify
 
-Features:
+      Keywords:
 
-Highlight key technical aspects or unique selling points
+      5–10 relevant keywords
 
-Informative and scannable
+      Focus on search terms similar to title
 
-Price:
-
-Use original price only; do not modify
-
-Keywords:
-
-5–10 relevant keywords
-
-Focus on search terms similar to title
-
-Rules for AI:
-
-No empty strings in title, description, bullets, or features
-
-Minimal original data → AI should creatively complete content
-
-Original data present → AI should be accurate and specific
-
-No promotional language like "best" or "cheapest"
-
-Response must be in JSON format
+     And added few strict rules so that it functions as instructed 
