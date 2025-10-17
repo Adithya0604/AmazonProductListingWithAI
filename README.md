@@ -11,6 +11,24 @@ This project allows users to fetch Amazon product details using ASIN numbers and
 
     products table created for storing product data
 
+    brew install mysql
+
+    brew services start mysql
+
+    Log into MySQL
+      mysql -u root -p
+    
+    Create a Database
+      CREATE DATABASE my_app_db;
+
+    Create a User
+      CREATE USER 'adithya'@'localhost' IDENTIFIED BY '<your_password>';
+      GRANT ALL PRIVILEGES ON my_app_db.* TO 'adithya'@'localhost';
+      FLUSH PRIVILEGES;
+
+
+
+
   **Folders**:
 
     router/ → API routes
