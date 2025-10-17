@@ -167,11 +167,11 @@ function App() {
     },
     keywordsContainer: {
       backgroundColor: "white",
-      padding: "40px 24px", 
+      padding: "40px 24px",
       borderRadius: "12px",
       border: "2px solid #d1d5db",
       marginTop: "24px",
-      minHeight: "80px", 
+      minHeight: "80px",
       overflow: "visible",
     },
     keywordsTitle: {
@@ -193,19 +193,6 @@ function App() {
       borderRadius: "4px",
       fontWeight: "500",
     },
-    historyItem: {
-      backgroundColor: "white",
-      padding: "24px",
-      borderRadius: "12px",
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      marginBottom: "24px",
-    },
-    asinText: {
-      fontSize: "0.875rem",
-      color: "#6b7280",
-      marginBottom: "16px",
-      fontWeight: "500",
-    },
     emptyState: {
       textAlign: "center",
       color: "#4b5563",
@@ -220,6 +207,64 @@ function App() {
       fontSize: "0.875rem",
       marginTop: "8px",
       border: "1px solid #fde68a",
+    },
+    historyCard: {
+      backgroundColor: "white",
+      padding: "20px",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+      marginBottom: "16px",
+      border: "2px solid #e5e7eb",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+    },
+    historyCardHover: {
+      boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
+      transform: "translateY(-2px)",
+      border: "2px solid #2563eb",
+    },
+    historyAsin: {
+      fontSize: "1.1rem",
+      color: "#2563eb",
+      fontWeight: "700",
+      marginBottom: "12px",
+      letterSpacing: "0.5px",
+    },
+    historyContent: {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: "24px",
+      marginTop: "16px",
+    },
+    historySection: {
+      flex: "1",
+      minWidth: "0",
+    },
+    historySectionTitle: {
+      fontSize: "0.75rem",
+      fontWeight: "600",
+      color: "#6b7280",
+      textTransform: "uppercase",
+      marginBottom: "8px",
+      letterSpacing: "0.5px",
+    },
+    historySectionContent: {
+      fontSize: "0.875rem",
+      color: "#1f2937",
+      lineHeight: "1.6",
+      marginBottom: "0",
+      wordBreak: "break-word",
+    },
+    historyBulletList: {
+      listStyle: "disc",
+      paddingLeft: "20px",
+      margin: 0,
+    },
+    historyBulletItem: {
+      fontSize: "0.875rem",
+      color: "#374151",
+      marginBottom: "4px",
+      lineHeight: "1.5",
     },
   };
 
@@ -264,11 +309,17 @@ function App() {
 
   const fetchHistory = async () => {
     setLoadingHistory(true);
+    setError("");
     try {
       const response = await fetch("http://localhost:9003/api/all-history-product-list");
       const data = await response.json();
-      setHistory(data.history || []);
-      setShowHistory(true);
+      
+      if (data.success) {
+        setHistory(data.products || []);
+        setShowHistory(true);
+      } else {
+        setError("Failed to fetch history");
+      }
     } catch (err) {
       setError("Failed to fetch history: " + err.message);
     }
@@ -350,6 +401,80 @@ function App() {
     );
   };
 
+  const HistoryCard = ({ item }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    
+    // Parse optimized_data if it's a JSON string
+    let optimizedData = {};
+    try {
+      if (typeof item.optimized_data === 'string') {
+        optimizedData = JSON.parse(item.optimized_data);
+      } else if (item.optimized_data) {
+        optimizedData = item.optimized_data;
+      }
+    } catch (e) {
+      console.error('Error parsing optimized data:', e);
+    }
+
+    // Truncate text for preview
+    const truncateText = (text, maxLength = 150) => {
+      if (!text) return "N/A";
+      if (text.length <= maxLength) return text;
+      return text.substring(0, maxLength) + "...";
+    };
+
+    return (
+      <div
+        style={{
+          ...styles.historyCard,
+          ...(isHovered ? styles.historyCardHover : {}),
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div style={styles.historyAsin}>ASIN: {item.asin || "N/A"}</div>
+
+        {isHovered && (
+          <div style={styles.historyContent}>
+            <div style={styles.historySection}>
+              <p style={styles.historySectionTitle}>Title</p>
+              <p style={styles.historySectionContent}>
+                {truncateText(optimizedData.title, 200)}
+              </p>
+            </div>
+
+            <div style={styles.historySection}>
+              <p style={styles.historySectionTitle}>Description</p>
+              <p style={styles.historySectionContent}>
+                {truncateText(optimizedData.Description || optimizedData.description, 300)}
+              </p>
+            </div>
+
+            <div style={styles.historySection}>
+              <p style={styles.historySectionTitle}>Bullet Points</p>
+              {optimizedData.bullet_points && optimizedData.bullet_points.length > 0 ? (
+                <ul style={styles.historyBulletList}>
+                  {optimizedData.bullet_points.slice(0, 3).map((point, idx) => (
+                    <li key={idx} style={styles.historyBulletItem}>
+                      {truncateText(point, 120)}
+                    </li>
+                  ))}
+                  {optimizedData.bullet_points.length > 3 && (
+                    <li style={styles.historyBulletItem}>
+                      <i>...and {optimizedData.bullet_points.length - 3} more</i>
+                    </li>
+                  )}
+                </ul>
+              ) : (
+                <p style={styles.historySectionContent}>N/A</p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (showHistory) {
     return (
       <div style={styles.container}>
@@ -376,32 +501,7 @@ function App() {
           ) : (
             <div>
               {history.map((item, idx) => (
-                <div key={idx} style={styles.historyItem}>
-                  <p style={styles.asinText}>ASIN: {item.asin}</p>
-                  <div style={styles.cardsGrid}>
-                    <ProductCard data={item.original} title="Original" />
-                    <ProductCard
-                      data={item.optimized}
-                      title="Optimized"
-                      isOptimized={true}
-                    />
-                  </div>
-
-                  {item.optimized &&
-                    item.optimized.keywords &&
-                    item.optimized.keywords.length > 0 && (
-                      <div style={styles.keywordsContainer}>
-                        <p style={styles.keywordsTitle}>Keywords:</p>
-                        <div style={styles.keywordTags}>
-                          {item.optimized.keywords.map((keyword, kidx) => (
-                            <span key={kidx} style={styles.keywordTag}>
-                              {keyword}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                </div>
+                <HistoryCard key={idx} item={item} />
               ))}
             </div>
           )}
