@@ -1,0 +1,23 @@
+1. What is the difference beteen the createPool & createConnections? 
+   # Will create each induvidual connection for every api call instead creating poola dn makeing that limit number of connection.
+2. What is the imporvement which we can make more in the connections?
+3. Is it required to use helmet? or any other attack's preventers?
+4. what is the this scrpper ? and chrouim?
+5. why the insert mysql query is that way?
+6. is ther any way to chnage the query in simple terms ?
+7. the loading ad frontend part all are to be very carefully reviweed?
+8. 
+
+
+
+Project Status:
+   A. Backend
+      1. Server setup & DB Connection & .ENV 
+      2. Final Endpoint Api(AmazonProductListing) & aiService (Gemini). is working properly.
+      3. Data of all steps are been followed. the retriveal of data from frontend, validting it, Using scrapper for extracting the product details, Stroing Original Data & Optimized Data (Gemini). 
+      4. Ai Service (Gemini) working properly with the Original Data. And optimzation is done in quit good way. 
+   B. frontend
+      1. UI is very simple with only Required Feilds (Input, Button).
+      2. Card displaying side by side with proper details from Db after storing.
+      3. Keywords are seprated.
+      4. History is present.
